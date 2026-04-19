@@ -475,37 +475,24 @@
           {
             "name": "body",
             "in": "body",
-            "required": true,
+            "required": false,
             "schema": {
               "type": "object",
               "properties": {
                 "values": {
-                  "type": "array",
-                  "items": {
-                    "type": "array",
-                    "items": {}
-                  },
-                  "description": "1x1 array of cell values, e.g. [[\"Hello\"]] or [[42]]. Pass [[\"\"]] to clear."
+                  "type": "string",
+                  "description": "values",
+                  "title": "Value"
                 },
                 "formulas": {
-                  "type": "array",
-                  "items": {
-                    "type": "array",
-                    "items": {
-                      "type": "string"
-                    }
-                  },
-                  "description": "1x1 array of formula strings, e.g. [[\"=SUM(A1:A10)\"]]."
+                  "type": "string",
+                  "description": "formulas",
+                  "title": "Formula"
                 },
                 "numberFormat": {
-                  "type": "array",
-                  "items": {
-                    "type": "array",
-                    "items": {
-                      "type": "string"
-                    }
-                  },
-                  "description": "1x1 array of Excel number format strings, e.g. [[\"$#,##0.00\"]]."
+                  "type": "string",
+                  "description": "numberFormat",
+                  "title": "Number Format"
                 }
               }
             }
@@ -529,11 +516,11 @@
     "oauth2-auth": {
       "type": "oauth2",
       "flow": "accessCode",
-      "authorizationUrl": "https://login.microsoftonline.com/common/oauth2/authorize",
       "tokenUrl": "https://login.windows.net/common/oauth2/authorize",
       "scopes": {
         "https://graph.microsoft.com/.default": "https://graph.microsoft.com/.default"
-      }
+      },
+      "authorizationUrl": "https://login.microsoftonline.com/common/oauth2/authorize"
     }
   }
 }

@@ -13,7 +13,7 @@ An Azure AD app registration is required for the connector's OAuth connection. A
 ### Required delegated permissions (Microsoft Graph)
 
 | Permission | Purpose |
-|---|---|
+| --- | --- |
 | `User.Read` | Sign in and read user profile |
 | `openid`, `profile`, `email` | Standard OIDC claims |
 | `offline_access` | Refresh token support |
@@ -46,7 +46,8 @@ An Azure AD app registration is required for the connector's OAuth connection. A
 - A registered Azure AD app with `https://graph.microsoft.com/.default` delegated scope
 - The app's **Client ID** entered in `apiProperties.json` (`connectionParameters.token.oAuthSettings.clientId`)
 - The connector deployed to a Power Platform environment via PAC CLI:
-  ```
+
+  ```bash
   pac connector create --settings-file settings.json
   ```
 
@@ -64,7 +65,7 @@ An Azure AD app registration is required for the connector's OAuth connection. A
 The Graph API exposes workbook operations under several base paths:
 
 | Base path | Works for workbook operations? |
-|---|---|
+| --- | --- |
 | `/v1.0/drives/{driveId}/...` | No — returns 404 or method-not-allowed for most workbook endpoints |
 | `/v1.0/users/{userId}/drive/...` | Only for the signed-in user's personal OneDrive |
 | `/v1.0/sites('{siteId}')/drive/...` | Yes — works universally |
@@ -112,7 +113,7 @@ Both IDs and names are accepted wherever `{idOrName}` appears. Worksheet and cha
 The Graph API offers several ways to address a cell or region. Choose based on what information the caller is likely to have:
 
 | Method | Swagger path segment | Notes |
-|---|---|---|
+| --- | --- | --- |
 | A1 notation | `/range(address='{address}')` | Most familiar; supports cross-sheet refs (`Sheet1!A1:B2`) |
 | Row/column index | `/cell(row={row},column={column})` | Zero-based; returns a single-cell range object |
 | Named range | `/names/{name}/range` | Caller needs to know the defined name |
@@ -128,6 +129,28 @@ The Graph API offers several ways to address a cell or region. Choose based on w
 - **POST** is used for actions (createSession, closeSession, function calls) and for appending rows to tables
 - Always pass `workbook-session-id` as an optional header on every operation — even reads benefit from session context
 
+### Body schema: scalars vs. arrays
+
+The Graph API technically requires `values`, `formulas`, and `numberFormat` as 2D arrays (an array of rows, each row an array of cell values). However, in practice:
+
+- **Single-cell operations** (`/cell(row,column)`) — the API accepts plain scalar strings. Define body properties as `type: string` in the Swagger. This produces a much friendlier connector experience in Power Automate (simple text fields rather than expression-built arrays).
+- **Multi-cell / row operations** (`/range(address=...)`, table rows, etc.) — scalar coercion is unlikely to hold. Use the proper 2D array schema (`array` of `array`) and instruct callers to construct the array expression in their flow.
+
+When in doubt, test with a scalar first. If the API rejects it, fall back to the 2D array schema.
+
+#### Policy templates as an alternative
+
+If an operation requires a body shape that is impractical to construct in a Power Automate expression (e.g. wrapping a scalar into `[[value]]`), Power Platform [custom connector policy templates](https://learn.microsoft.com/en-us/connectors/custom-connectors/policy-templates) can transform the request body between what the connector exposes to the caller and what gets sent to the API. This lets the Swagger define a user-friendly flat schema while the policy handles the structural transformation transparently. Three built-in templates are relevant to body shape transformations in this connector:
+
+| Template | Direction | What it does |
+| --- | --- | --- |
+| [`convertobjecttoarray`](https://learn.microsoft.com/en-us/connectors/custom-connectors/policy-templates/convertobjecttoarray/convertobjecttoarray) | Request or Response | Converts a JSON object (key→value pairs) into an array of objects |
+| [`convertarraytoobject`](https://learn.microsoft.com/en-us/connectors/custom-connectors/policy-templates/convertarraytoobject/convertarraytoobject) | Request or Response | Converts an array into a JSON object keyed by a chosen property — inverse of the above |
+| [`stringtoarray`](https://learn.microsoft.com/en-us/connectors/custom-connectors/policy-templates/stringtoarray/stringtoarray) | Request or Response | Splits a delimited string into an array of objects — useful if a caller passes comma-separated values that the API expects as an array |
+| [`setproperty`](https://learn.microsoft.com/en-us/connectors/custom-connectors/policy-templates/setproperty/setproperty) | Request or Response | Adds or overwrites a property on a JSON object with a constant, a value copied from another property, or a template combining both — useful for injecting a wrapper property around a scalar before it reaches the API |
+
+For the `UpdateCell` use case (wrapping a scalar into `[[value]]`), none of these are a direct fit — they operate on existing objects/arrays rather than constructing new nesting. If the scalar coercion stops working, the most pragmatic fallback is to define the body property as a string, document that callers must wrap it (e.g. `[[triggerBody()?['value']]]`), and reference the policy templates as a place to look for a cleaner solution.
+
 ### Adding an operation to the Swagger
 
 1. Copy an existing path block of the same HTTP method as a starting point
@@ -135,11 +158,12 @@ The Graph API offers several ways to address a cell or region. Choose based on w
 3. Keep `siteId` and `pathFromRoot` as required path parameters — every workbook operation needs them
 4. Add `workbook-session-id` as an optional (or required, for CloseSession) header parameter
 5. Define the response schema from the Graph API docs; an empty `schema: {}` works for prototyping
+6. For write operation bodies on single-cell endpoints, define properties as `type: string` with a friendly `title`; for multi-cell endpoints use nested arrays
 
 ## Current Operations
 
 | Operation | Method | Description |
-|---|---|---|
+| --- | --- | --- |
 | `GetSiteByPath` | GET | Resolve a site by hostname and path |
 | `CreateSession` | POST | Open a workbook editing session |
 | `CloseSession` | POST | Close and commit/discard a session |
@@ -147,3 +171,4 @@ The Graph API offers several ways to address a cell or region. Choose based on w
 | `ListNames` | GET | List named ranges and named items |
 | `ListTables` | GET | List tables in a workbook |
 | `GetCell` | GET | Get a cell by zero-based row/column index |
+| `UpdateCell` | PATCH | Update a cell's value, formula, and/or number format |

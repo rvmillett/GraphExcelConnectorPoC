@@ -5,12 +5,12 @@
         "type": "oauthSetting",
         "oAuthSettings": {
           "identityProvider": "aad",
-          "clientId": "",
+          "clientId": "056f2811-c65a-46db-bc91-7a33fd872bd3",
           "scopes": [
             "https://graph.microsoft.com/.default"
           ],
           "redirectMode": "GlobalPerConnector",
-          "redirectUrl": "",
+          "redirectUrl": "https://global.consent.azure-apim.net/redirect/admin-5fmsgraphexceleditor-5fe087d32593b2ed91",
           "properties": {
             "IsFirstParty": "True",
             "AzureActiveDirectoryResourceId": "https://graph.microsoft.com",
