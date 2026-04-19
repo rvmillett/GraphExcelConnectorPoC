@@ -48,15 +48,29 @@ An Azure AD app registration is required for the connector's OAuth connection. A
 - The connector deployed to a Power Platform environment via PAC CLI:
 
   ```bash
-  pac connector create --settings-file settings.json
+  pac connector create \
+    --environment <your-environment-id-or-url> \
+    --api-definition-file MSGraphExcelEditor/apiDefinition.Swagger.json \
+    --api-properties-file MSGraphExcelEditor/apiProperties.json \
+    --icon-file MSGraphExcelEditor/icon.png
   ```
+
+  To add the connector to an existing unmanaged Dataverse solution, append:
+
+  ```bash
+    --solution-unique-name <your-solution-unique-name>
+  ```
+
+  > `--settings-file` is an alternative but requires `connectorId` and `environment` populated in `settings.json` — use the explicit flags above for a first-time create.
 
 ### Typical call sequence
 
+> This connector only works with `.xlsx` files. Legacy `.xls` format is not supported by the Graph API workbook endpoints.
+
 1. **GetSiteByPath** — resolve the SharePoint/OneDrive site and capture the `id` from the response
-2. **CreateSession** — open a workbook session; capture the `id` from the response (`workbook-session-id`)
-3. Call any read/write operations, passing `siteId` and `workbook-session-id` on each request
-4. **CloseSession** — close the session when done to commit or discard changes
+2. **CreateSession** — open a workbook session; capture the `id` from the response (`workbook-session-id`). Requires `siteId` and the relative path to the `.xlsx` file.
+3. Call any read/write operations, passing `siteId`, the relative path to the `.xlsx` file, and `workbook-session-id` on each request
+4. **CloseSession** — close the session when done to commit or discard changes. Requires `siteId` and the relative path to the `.xlsx` file.
 
 ## Design Decisions
 
@@ -66,11 +80,13 @@ The Graph API exposes workbook operations under several base paths:
 
 | Base path | Works for workbook operations? |
 | --- | --- |
-| `/v1.0/drives/{driveId}/...` | No — returns 404 or method-not-allowed for most workbook endpoints |
-| `/v1.0/users/{userId}/drive/...` | Only for the signed-in user's personal OneDrive |
+| `/v1.0/drives/{driveId}/...` | No — returns 403 "Could not obtain a WAC access token" |
+| `/v1.0/users/{userId}/drive/...` | Yes |
+| `/v1.0/me/drive/...` | Yes |
+| `/v1.0/groups/{groupId}/drive/...` | Yes |
 | `/v1.0/sites('{siteId}')/drive/...` | Yes — works universally |
 
-After significant trial and error, the `sites('{siteId}')` path proved to be the most reliable and broadly applicable route. Every SharePoint site and OneDrive library resolves to a site address, so this pattern covers both SharePoint document libraries and personal OneDrives without needing separate paths.
+All of the working paths (`users`, `me`, `groups`, `sites`) can be resolved to a site ID via **GetSiteByPath**, so using `siteId` as the single addressing scheme avoids duplicating operations across multiple base paths.
 
 ### Resolving the Site ID
 
@@ -90,7 +106,7 @@ Every workbook operation follows this structure:
 /v1.0/sites('{siteId}')/drive/root:/{pathFromRoot}:/workbook/{resource}
 ```
 
-`pathFromRoot` is the file path relative to the drive root, e.g. `Documents/Budget.xlsx`. The workbook sub-resources nest under it:
+`pathFromRoot` is the file path relative to the drive root, e.g. `Documents/Budget.xlsx` (no leading `/`). This is preferred over addressing by `itemId` because the path is typically already known to the caller — resolving an `itemId` would require an additional lookup operation. The workbook sub-resources nest under it:
 
 ```text
 /workbook
