@@ -27,7 +27,7 @@ An Azure AD app registration is required for the connector's OAuth connection. A
 
 1. In Azure Portal → **App registrations**, create a new registration (`AzureADMyOrg` audience)
 2. Under **Manifest**, paste the contents of the template file — this will set all required permissions in one step
-3. Under **Certificates & secrets**, create a client secret and note the value
+3. Under **Certificates & secrets**, create a client secret and note the value. Ensure this secret is factored into your organization's secret rotation processes — when rotated, the connector's connection will need to be updated with the new secret.
 4. After importing/uploading the custom connector in Power Platform, the platform will generate one or more redirect URIs in the format:
 
    ```text
