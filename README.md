@@ -172,3 +172,12 @@ For the `UpdateCell` use case (wrapping a scalar into `[[value]]`), none of thes
 | `ListTables` | GET | List tables in a workbook |
 | `GetCell` | GET | Get a cell by zero-based row/column index |
 | `UpdateCell` | PATCH | Update a cell's value, formula, and/or number format |
+| `GetRange` | GET | Get a range by A1 notation (values, formulas, text, numberFormat) |
+| `UpdateRange` | PATCH | Update a range by A1 notation — values, formulas, and/or number format as 2D arrays |
+| `CreateWorksheet` | POST | Add a new worksheet to the workbook |
+| `UpdateWorksheet` | PATCH | Rename a worksheet or change its visibility |
+| `CreateTable` | POST | Create a table from an A1-notation range |
+| `UpdateTable` | PATCH | Rename a table or toggle headers/totals/style |
+| `GetNamedRange` | GET | Get a single named range by name |
+| `CreateNamedRange` | POST | Define a new named range with a reference and optional comment |
+| `UpdateNamedRange` | PATCH | Update a named range's reference, visibility, or comment |

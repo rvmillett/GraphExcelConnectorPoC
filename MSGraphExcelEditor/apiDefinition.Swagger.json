@@ -173,6 +173,165 @@
         ]
       }
     },
+    "/v1.0/sites(\u0027{siteId}\u0027)/drive/root:/{pathFromRoot}:/workbook/worksheets/add": {
+      "post": {
+        "responses": {
+          "default": {
+            "description": "default",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "description": "id"
+                },
+                "name": {
+                  "type": "string",
+                  "description": "name"
+                },
+                "position": {
+                  "type": "integer",
+                  "format": "int32",
+                  "description": "position"
+                },
+                "visibility": {
+                  "type": "string",
+                  "description": "visibility"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Create Worksheet",
+        "description": "Create Worksheet",
+        "operationId": "CreateWorksheet",
+        "parameters": [
+          {
+            "name": "siteId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "pathFromRoot",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "workbook-session-id",
+            "in": "header",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": false,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "name",
+                  "title": "Name"
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    "/v1.0/sites(\u0027{siteId}\u0027)/drive/root:/{pathFromRoot}:/workbook/worksheets/{worksheetIdOrName}": {
+      "patch": {
+        "responses": {
+          "default": {
+            "description": "default",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "description": "id"
+                },
+                "name": {
+                  "type": "string",
+                  "description": "name"
+                },
+                "position": {
+                  "type": "integer",
+                  "format": "int32",
+                  "description": "position"
+                },
+                "visibility": {
+                  "type": "string",
+                  "description": "visibility"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Update Worksheet",
+        "description": "Update Worksheet",
+        "operationId": "UpdateWorksheet",
+        "parameters": [
+          {
+            "name": "siteId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "pathFromRoot",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "worksheetIdOrName",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "workbook-session-id",
+            "in": "header",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "name",
+                  "title": "Name"
+                },
+                "position": {
+                  "type": "integer",
+                  "format": "int32",
+                  "description": "position",
+                  "title": "Position"
+                },
+                "visibility": {
+                  "type": "string",
+                  "description": "Visible or Hidden",
+                  "title": "Visibility",
+                  "enum": [
+                    "Visible",
+                    "Hidden"
+                  ]
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
     "/v1.0/sites(\u0027{siteId}\u0027)/drive/root:/{pathFromRoot}:/workbook/closeSession": {
       "post": {
         "responses": {
@@ -278,6 +437,249 @@
         ]
       }
     },
+    "/v1.0/sites(\u0027{siteId}\u0027)/drive/root:/{pathFromRoot}:/workbook/names/add": {
+      "post": {
+        "responses": {
+          "default": {
+            "description": "default",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "name"
+                },
+                "type": {
+                  "type": "string",
+                  "description": "type"
+                },
+                "value": {
+                  "type": "object",
+                  "properties": {},
+                  "description": "value"
+                },
+                "visible": {
+                  "type": "boolean",
+                  "description": "visible"
+                },
+                "comment": {
+                  "type": "string",
+                  "description": "comment"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Create Named Range",
+        "description": "Create Named Range",
+        "operationId": "CreateNamedRange",
+        "parameters": [
+          {
+            "name": "siteId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "pathFromRoot",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "workbook-session-id",
+            "in": "header",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "name",
+                  "title": "Name"
+                },
+                "reference": {
+                  "type": "string",
+                  "description": "Range reference, e.g. =Sheet1!$A$1:$C$5",
+                  "title": "Reference"
+                },
+                "comment": {
+                  "type": "string",
+                  "description": "comment",
+                  "title": "Comment"
+                }
+              },
+              "required": [
+                "name",
+                "reference"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "/v1.0/sites(\u0027{siteId}\u0027)/drive/root:/{pathFromRoot}:/workbook/names/{name}": {
+      "get": {
+        "responses": {
+          "default": {
+            "description": "default",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "name"
+                },
+                "type": {
+                  "type": "string",
+                  "description": "type"
+                },
+                "value": {
+                  "type": "object",
+                  "properties": {},
+                  "description": "value"
+                },
+                "visible": {
+                  "type": "boolean",
+                  "description": "visible"
+                },
+                "comment": {
+                  "type": "string",
+                  "description": "comment"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Get Named Range",
+        "description": "Get Named Range",
+        "operationId": "GetNamedRange",
+        "parameters": [
+          {
+            "name": "siteId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "pathFromRoot",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "workbook-session-id",
+            "in": "header",
+            "required": false,
+            "type": "string"
+          }
+        ]
+      },
+      "patch": {
+        "responses": {
+          "default": {
+            "description": "default",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "name"
+                },
+                "type": {
+                  "type": "string",
+                  "description": "type"
+                },
+                "value": {
+                  "type": "object",
+                  "properties": {},
+                  "description": "value"
+                },
+                "visible": {
+                  "type": "boolean",
+                  "description": "visible"
+                },
+                "comment": {
+                  "type": "string",
+                  "description": "comment"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Update Named Range",
+        "description": "Update Named Range",
+        "operationId": "UpdateNamedRange",
+        "parameters": [
+          {
+            "name": "siteId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "pathFromRoot",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "workbook-session-id",
+            "in": "header",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "name",
+                  "title": "Name"
+                },
+                "value": {
+                  "type": "string",
+                  "description": "New range reference, e.g. =Sheet1!$A$1:$C$5",
+                  "title": "Reference"
+                },
+                "visible": {
+                  "type": "boolean",
+                  "description": "visible",
+                  "title": "Visible"
+                },
+                "comment": {
+                  "type": "string",
+                  "description": "comment",
+                  "title": "Comment"
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
     "/v1.0/sites(\u0027{siteId}\u0027)/drive/root:/{pathFromRoot}:/workbook/tables": {
       "get": {
         "responses": {
@@ -340,6 +742,180 @@
             "in": "header",
             "required": false,
             "type": "string"
+          }
+        ]
+      }
+    },
+    "/v1.0/sites(\u0027{siteId}\u0027)/drive/root:/{pathFromRoot}:/workbook/tables/add": {
+      "post": {
+        "responses": {
+          "default": {
+            "description": "default",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "description": "id"
+                },
+                "name": {
+                  "type": "string",
+                  "description": "name"
+                },
+                "showHeaders": {
+                  "type": "boolean",
+                  "description": "showHeaders"
+                },
+                "showTotals": {
+                  "type": "boolean",
+                  "description": "showTotals"
+                },
+                "style": {
+                  "type": "string",
+                  "description": "style"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Create Table",
+        "description": "Create Table",
+        "operationId": "CreateTable",
+        "parameters": [
+          {
+            "name": "siteId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "pathFromRoot",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "workbook-session-id",
+            "in": "header",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "address": {
+                  "type": "string",
+                  "description": "A1-notation range for the table, e.g. A1:C5",
+                  "title": "Address"
+                },
+                "hasHeaders": {
+                  "type": "boolean",
+                  "description": "Whether the first row contains headers",
+                  "title": "Has Headers"
+                }
+              },
+              "required": [
+                "address",
+                "hasHeaders"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "/v1.0/sites(\u0027{siteId}\u0027)/drive/root:/{pathFromRoot}:/workbook/tables/{tableIdOrName}": {
+      "patch": {
+        "responses": {
+          "default": {
+            "description": "default",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "description": "id"
+                },
+                "name": {
+                  "type": "string",
+                  "description": "name"
+                },
+                "showHeaders": {
+                  "type": "boolean",
+                  "description": "showHeaders"
+                },
+                "showTotals": {
+                  "type": "boolean",
+                  "description": "showTotals"
+                },
+                "style": {
+                  "type": "string",
+                  "description": "style"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Update Table",
+        "description": "Update Table",
+        "operationId": "UpdateTable",
+        "parameters": [
+          {
+            "name": "siteId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "pathFromRoot",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "tableIdOrName",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "workbook-session-id",
+            "in": "header",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "name",
+                  "title": "Name"
+                },
+                "showHeaders": {
+                  "type": "boolean",
+                  "description": "showHeaders",
+                  "title": "Show Headers"
+                },
+                "showTotals": {
+                  "type": "boolean",
+                  "description": "showTotals",
+                  "title": "Show Totals"
+                },
+                "style": {
+                  "type": "string",
+                  "description": "Excel table style name, e.g. TableStyleMedium2",
+                  "title": "Style"
+                }
+              }
+            }
           }
         ]
       }
@@ -493,6 +1069,219 @@
                   "type": "string",
                   "description": "numberFormat",
                   "title": "Number Format"
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    "/v1.0/sites(\u0027{siteId}\u0027)/drive/root:/{pathFromRoot}:/workbook/worksheets/{worksheetIdOrName}/range(address=\u0027{address}\u0027)": {
+      "get": {
+        "responses": {
+          "default": {
+            "description": "default",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "address": {
+                  "type": "string",
+                  "description": "address"
+                },
+                "addressLocal": {
+                  "type": "string",
+                  "description": "addressLocal"
+                },
+                "cellCount": {
+                  "type": "integer",
+                  "format": "int32",
+                  "description": "cellCount"
+                },
+                "columnCount": {
+                  "type": "integer",
+                  "format": "int32",
+                  "description": "columnCount"
+                },
+                "rowCount": {
+                  "type": "integer",
+                  "format": "int32",
+                  "description": "rowCount"
+                },
+                "columnIndex": {
+                  "type": "integer",
+                  "format": "int32",
+                  "description": "columnIndex"
+                },
+                "rowIndex": {
+                  "type": "integer",
+                  "format": "int32",
+                  "description": "rowIndex"
+                },
+                "values": {
+                  "type": "array",
+                  "items": {
+                    "type": "array",
+                    "items": {}
+                  },
+                  "description": "values"
+                },
+                "formulas": {
+                  "type": "array",
+                  "items": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "description": "formulas"
+                },
+                "text": {
+                  "type": "array",
+                  "items": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "description": "text"
+                },
+                "numberFormat": {
+                  "type": "array",
+                  "items": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "description": "numberFormat"
+                },
+                "valueTypes": {
+                  "type": "array",
+                  "items": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "description": "valueTypes"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Get Range",
+        "description": "Get Range",
+        "operationId": "GetRange",
+        "parameters": [
+          {
+            "name": "siteId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "pathFromRoot",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "worksheetIdOrName",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "address",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "A1-notation address, e.g. A1:C5"
+          },
+          {
+            "name": "workbook-session-id",
+            "in": "header",
+            "required": false,
+            "type": "string"
+          }
+        ]
+      },
+      "patch": {
+        "responses": {
+          "default": {
+            "description": "default",
+            "schema": {}
+          }
+        },
+        "summary": "Update Range",
+        "description": "Update Range",
+        "operationId": "UpdateRange",
+        "parameters": [
+          {
+            "name": "siteId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "pathFromRoot",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "worksheetIdOrName",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "address",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "A1-notation address, e.g. A1:C5"
+          },
+          {
+            "name": "workbook-session-id",
+            "in": "header",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "values": {
+                  "type": "array",
+                  "items": {
+                    "type": "array",
+                    "items": {}
+                  },
+                  "description": "2D array of cell values, e.g. [[\u0022A1\u0022,\u0022B1\u0022],[\u0022A2\u0022,\u0022B2\u0022]]. Pass \u0022\u0022 to clear a cell, null to leave it unchanged."
+                },
+                "formulas": {
+                  "type": "array",
+                  "items": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "description": "2D array of formula strings, e.g. [[\u0022=SUM(X1:X5)\u0022,\u0022\u0022],[\u0022\u0022,\u0022=TODAY()\u0022]]."
+                },
+                "numberFormat": {
+                  "type": "array",
+                  "items": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "description": "2D array of Excel number format strings, e.g. [[\u0022$#,##0.00\u0022,\u0022@\u0022]]."
                 }
               }
             }
